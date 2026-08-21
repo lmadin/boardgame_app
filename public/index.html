@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>참가자 - 보드게임장</title>
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+<div id="registerScreen" class="wrap" style="display:none;">
+  <div style="padding-top:14%; text-align:center;">
+    <div style="font-size:44px;">🎲</div>
+    <div style="font-size:22px; font-weight:800; margin-top:6px;" id="eventNameLabel">보드게임장</div>
+    <div class="muted mt8" style="font-size:14px;">이름을 등록하면 시드칩이 자동 지급돼요</div>
+  </div>
+  <div class="card mt24">
+    <label for="nameInput">이름</label>
+    <input type="text" id="nameInput" placeholder="예: 홍길동" maxlength="20" autocomplete="off">
+    <div id="registerError"></div>
+    <button class="btn primary mt16" id="registerBtn" style="margin-top:16px;">참가 등록하기</button>
+    <div class="hint center mt8">이미 등록했다면 같은 이름으로 다시 입력해도 새 계정이 생겨요.<br>이 화면은 처음 한 번만 보여요 — 등록 후엔 이 기기에 자동 저장됩니다.</div>
+  </div>
+</div>
+
+<div id="dashScreen" style="display:none;">
+  <div class="topbar">
+    <div class="title">🎲 <span id="dashEventName">보드게임장</span></div>
+    <div class="badge gold" id="rankBadge">-위</div>
+  </div>
+
+  <div class="wrap">
+    <div class="card chip-hero">
+      <div class="label">MY 잔여칩</div>
+      <div class="value" id="myChips">0</div>
+      <div class="sub" id="myName">-</div>
+    </div>
+
+    <div id="bountyBanner"></div>
+
+    <div class="nav-tabs">
+      <button class="active" data-tab="rank">🏆 실시간 순위</button>
+      <button data-tab="pinball">🎯 핀볼 도박전</button>
+      <button data-tab="history">📜 내 기록</button>
+    </div>
+
+    <div id="tab-rank">
+      <div class="card">
+        <div id="leaderboardList">불러오는 중...</div>
+      </div>
+    </div>
+
+    <div id="tab-pinball" style="display:none;">
+      <div class="card">
+        <div class="section-title">핀볼 도박전이란?</div>
+        <div style="font-size:13.5px; color:var(--ink-2); line-height:1.6;">
+          공을 굴려 가장 오래 살아남으면 승리! 기본 공 <b id="freeBallCount">1</b>개는 무료, 추가 공은
+          개당 <b id="ballCostLabel">10</b>칩. 최종 1·2·3등 공만 배당을 받고 나머지는 투자금이 사라져요.
+        </div>
+        <div class="row mt16">
+          <button class="btn ghost small" id="ballMinus">－</button>
+          <div class="btn ghost small" style="pointer-events:none;" id="ballCountDisplay">1개</div>
+          <button class="btn ghost small" id="ballPlus">＋</button>
+        </div>
+        <button class="btn primary mt16" id="buyBallBtn" style="margin-top:12px;">공 구매하기</button>
+        <div id="pinballMsg"></div>
+      </div>
+      <div class="card">
+        <div class="section-title">내 공 현황</div>
+        <div id="myBallsList" class="muted" style="font-size:13.5px;">불러오는 중...</div>
+      </div>
+    </div>
+
+    <div id="tab-history" style="display:none;">
+      <div class="card">
+        <div class="section-title">배팅 기록</div>
+        <div id="historyList" class="muted" style="font-size:13.5px;">불러오는 중...</div>
+      </div>
+    </div>
+
+    <div class="center mt24">
+      <a href="/leaderboard.html" class="hint">📺 전광판 화면 보기</a>
+    </div>
+  </div>
+</div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="/js/index.js"></script>
+</body>
+</html>

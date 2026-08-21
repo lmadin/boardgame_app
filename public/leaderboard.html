@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>전광판 - 실시간 순위</title>
+<link rel="stylesheet" href="/css/style.css">
+<style>
+  body { padding: 0; overflow-x: hidden; }
+  .board-wrap { max-width: 1200px; margin: 0 auto; padding: 28px 32px 60px; }
+  .header { display:flex; align-items:center; justify-content:space-between; margin-bottom: 18px; }
+  .header h1 { font-size: 34px; margin: 0; font-weight: 900; letter-spacing: -0.5px; }
+  .header .clock { color: var(--ink-muted); font-size: 16px; font-weight: 600; }
+  .podium { display:flex; align-items:flex-end; gap: 18px; margin: 24px 0 34px; }
+  .podium .slot { flex:1; text-align:center; border-radius: 18px; padding: 18px 12px 22px; border: 1px solid var(--border); background: var(--surface); }
+  .podium .slot.p1 { order: 2; padding-top: 6px; background: linear-gradient(180deg, rgba(250,178,25,0.22), var(--surface)); border-color: rgba(250,178,25,0.45); }
+  .podium .slot.p2 { order: 1; }
+  .podium .slot.p3 { order: 3; }
+  .podium .medal { font-size: 44px; }
+  .podium.awards .medal { font-size: 56px; }
+  .podium .pname { font-size: 22px; font-weight: 800; margin-top: 6px; }
+  .podium .pchips { font-size: 28px; font-weight: 900; color: var(--gold); margin-top: 4px; }
+  .rest { display:grid; grid-template-columns: 1fr 1fr; gap: 8px 24px; }
+  .rest .rank-row { background: var(--surface); }
+  .bounty-strip { display:flex; gap:10px; flex-wrap:wrap; margin-bottom: 18px; }
+  .modebtn { position: fixed; bottom: 16px; right: 16px; opacity: 0.35; }
+  .modebtn:hover { opacity: 1; }
+  .awards-screen { display:none; text-align:center; padding-top: 4vh; }
+  .awards-screen .group35 { display:flex; gap: 16px; justify-content:center; margin-top: 26px; flex-wrap: wrap; }
+  .awards-screen .group35 .slot { width: 220px; }
+  @keyframes pop { 0% { transform: scale(0.85); opacity:0; } 100% { transform: scale(1); opacity:1; } }
+  .pop { animation: pop 0.4s ease; }
+</style>
+</head>
+<body>
+
+<div class="board-wrap" id="mainScreen">
+  <div class="header">
+    <h1 id="eventName">🎲 보드게임장</h1>
+    <div class="clock" id="clock">실시간 순위</div>
+  </div>
+
+  <div class="bounty-strip" id="bountyStrip"></div>
+
+  <div class="podium" id="podium"></div>
+
+  <div class="section-title">4위 이하</div>
+  <div class="rest" id="restList"></div>
+</div>
+
+<div class="awards-screen" id="awardsScreen">
+  <div style="font-size:40px; font-weight:900;">🏆 최종 시상식 🏆</div>
+  <div class="podium awards" id="awardsPodium" style="max-width:900px; margin:34px auto 0;"></div>
+  <div class="section-title" style="text-align:center;">3 ~ 5위</div>
+  <div class="group35" id="awardsGroup35"></div>
+</div>
+
+<button class="btn ghost small modebtn" id="modeBtn">🏆 시상식 모드</button>
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="/js/leaderboard.js"></script>
+</body>
+</html>

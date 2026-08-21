@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>부스 운영</title>
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+<div id="loginScreen" class="wrap" style="display:none;">
+  <div style="padding-top:16%; text-align:center;">
+    <div style="font-size:44px;">🎪</div>
+    <div style="font-size:22px; font-weight:800; margin-top:6px;">부스 운영 로그인</div>
+    <div class="muted mt8" style="font-size:14px;">담당 부스의 PIN 코드를 입력해주세요</div>
+  </div>
+  <div class="card mt24">
+    <label for="pinInput">PIN 코드</label>
+    <input type="text" id="pinInput" placeholder="4자리 숫자" inputmode="numeric" maxlength="4" autocomplete="off">
+    <div id="loginError"></div>
+    <button class="btn primary mt16" id="loginBtn" style="margin-top:16px;">입장하기</button>
+  </div>
+</div>
+
+<div id="boothScreen" style="display:none;">
+  <div class="topbar">
+    <div class="title">🎪 <span id="boothName">-</span></div>
+    <button class="btn ghost small" id="logoutBtn">나가기</button>
+  </div>
+
+  <div class="wrap">
+    <div id="bountyBanner"></div>
+
+    <div class="card">
+      <div class="row" style="align-items:center;">
+        <div>
+          <span class="badge" id="boothTypeBadge">-</span>
+          <span class="badge gold" id="multiplierBadge">기본 x2</span>
+        </div>
+        <div style="text-align:right;">
+          <span class="badge" id="streakBadge">연승 0</span>
+        </div>
+      </div>
+      <div class="hint mt8" id="ruleNote">-</div>
+    </div>
+
+    <div class="card">
+      <div class="section-title">대결 방식</div>
+      <div class="nav-tabs">
+        <button class="active" data-mode="1v3">1 : 3</button>
+        <button data-mode="1v1">1 : 1</button>
+      </div>
+
+      <label>참가자 검색 (최대 <span id="maxPick">3</span>명)</label>
+      <input type="text" id="searchInput" placeholder="이름으로 검색" autocomplete="off">
+      <div id="searchResults" class="mt8" style="max-height:180px; overflow-y:auto;"></div>
+
+      <div id="selectedWrap" class="mt16" style="display:none;">
+        <div class="section-title">선택된 참가자</div>
+        <div id="selectedList"></div>
+
+        <label>배팅칩 (선택된 인원 모두 동일 적용)</label>
+        <input type="number" id="stakeInput" placeholder="예: 10" inputmode="numeric">
+        <div class="hint" id="stakeHint"></div>
+
+        <div id="resultError"></div>
+        <button class="btn primary mt16" id="submitBtn" style="margin-top:16px;" disabled>결과 반영하기</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="section-title">최근 배팅 기록</div>
+      <div id="recentList" class="muted" style="font-size:13.5px;">-</div>
+    </div>
+  </div>
+</div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="/js/booth.js"></script>
+</body>
+</html>
