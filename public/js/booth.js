@@ -3,7 +3,7 @@ const $ = (sel) => document.querySelector(sel);
 let BOOTH_ID = sessionStorage.getItem('boothId');
 let BOOTH_PIN = sessionStorage.getItem('boothPin');
 let mode = '1v3';
-let selected = new Map(); // playerId -> {name, chips, result}
+let selected = new Map(); // playerId -> {name, chips, result, stake, multiplier}
 let allPlayers = [];
 let settings = {};
 let currentBooth = null;
@@ -154,7 +154,7 @@ $('#searchInput').addEventListener('input', () => {
       const max = mode === '1v1' ? 1 : 3;
       if (selected.size >= max) { alert(`최대 ${max}명까지 선택할 수 있어요.`); return; }
       const p = allPlayers.find(x => x.id === el.dataset.id);
-      selected.set(p.id, { name: p.name, chips: p.chips, result: null, multiplier: currentBooth ? currentBooth.baseMultiplier : 2 });
+      selected.set(p.id, { name: p.name, chips: p.chips, result: null, stake: null, multiplier: currentBooth ? currentBooth.baseMultiplier : 2 });
       $('#searchInput').value = '';
       results.innerHTML = '';
       renderSelected();
@@ -181,6 +181,10 @@ function renderSelected() {
           <button class="btn small ghost" data-act="remove" data-id="${id}">✕</button>
         </div>
       </div>
+      <div class="row" style="align-items:center; gap:8px;">
+        <label style="margin:0; flex:none; white-space:nowrap;">배팅칩</label>
+        <input type="number" min="1" value="${p.stake ?? ''}" placeholder="예: 10" data-stake-id="${id}" style="padding:8px 10px;">
+      </div>
       ${p.result === 'win' ? `
         <div class="row" style="align-items:center; gap:8px;">
           <label style="margin:0; flex:none; white-space:nowrap;">이 판 배당(x)</label>
@@ -198,6 +202,13 @@ function renderSelected() {
       renderSelected();
     });
   });
+  list.querySelectorAll('[data-stake-id]').forEach(input => {
+    input.addEventListener('input', () => {
+      const p = selected.get(input.dataset.stakeId);
+      p.stake = Number(input.value);
+      validateForm();
+    });
+  });
   list.querySelectorAll('[data-mult-id]').forEach(input => {
     input.addEventListener('input', () => {
       const p = selected.get(input.dataset.multId);
@@ -208,16 +219,18 @@ function renderSelected() {
   validateForm();
 }
 
-$('#stakeInput').addEventListener('input', validateForm);
-
 function validateForm() {
-  const stake = Number($('#stakeInput').value);
   const hint = $('#stakeHint');
   const minBet = settings.minBet || 5;
-  let ok = selected.size > 0 && Number.isFinite(stake) && stake >= minBet;
+  let ok = selected.size > 0;
   let msgs = [`최소 배팅 ${minBet}칩`];
   for (const [, p] of selected) {
-    if (stake > p.chips) { ok = false; msgs.push(`${p.name}님 잔여칩(${p.chips}) 초과`); }
+    if (!Number.isFinite(p.stake) || p.stake <= 0) {
+      ok = false; msgs.push(`${p.name}님 배팅칩을 입력해주세요`);
+    } else {
+      if (p.stake < minBet) { ok = false; msgs.push(`${p.name}님 최소 배팅 ${minBet}칩 미만`); }
+      if (p.stake > p.chips) { ok = false; msgs.push(`${p.name}님 잔여칩(${p.chips}) 초과`); }
+    }
     if (!p.result) ok = false;
     if (p.result === 'win' && (!Number.isFinite(p.multiplier) || p.multiplier <= 0)) {
       ok = false; msgs.push(`${p.name}님 배당을 입력해주세요`);
@@ -232,9 +245,8 @@ function validateForm() {
 $('#submitBtn').addEventListener('click', async () => {
   $('#resultError').innerHTML = '';
   if (!validateForm()) return;
-  const stake = Number($('#stakeInput').value);
   const entries = [...selected.entries()].map(([id, p]) => ({
-    playerId: id, stake, result: p.result,
+    playerId: id, stake: p.stake, result: p.result,
     multiplier: p.result === 'win' ? p.multiplier : undefined,
   }));
   $('#submitBtn').disabled = true;
@@ -243,7 +255,6 @@ $('#submitBtn').addEventListener('click', async () => {
     currentBooth = data.booth;
     renderBoothHeader();
     selected.clear();
-    $('#stakeInput').value = '';
     renderSelected();
     await loadBooth();
     await refreshPlayers();
