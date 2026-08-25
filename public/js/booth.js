@@ -21,6 +21,8 @@ async function api(path, opts = {}) {
   return data;
 }
 
+function maxForMode(m) { return m === '1v1' ? 1 : m === '1v2' ? 2 : 3; }
+
 function fmt(n) { return Number(n).toLocaleString('ko-KR'); }
 function escapeHtml(s) {
   return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -130,10 +132,10 @@ document.querySelectorAll('.nav-tabs button').forEach(btn => {
     document.querySelectorAll('.nav-tabs button').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
     mode = btn.dataset.mode;
-    $('#maxPick').textContent = mode === '1v1' ? '1' : '3';
-    if (mode === '1v1' && selected.size > 1) {
-      const first = [...selected.entries()][0];
-      selected = new Map([first]);
+    const max = maxForMode(mode);
+    $('#maxPick').textContent = String(max);
+    if (selected.size > max) {
+      selected = new Map([...selected.entries()].slice(0, max));
     }
     renderSelected();
   });
@@ -151,7 +153,7 @@ $('#searchInput').addEventListener('input', () => {
   ).join('');
   results.querySelectorAll('.player-pick').forEach(el => {
     el.addEventListener('click', () => {
-      const max = mode === '1v1' ? 1 : 3;
+      const max = maxForMode(mode);
       if (selected.size >= max) { alert(`최대 ${max}명까지 선택할 수 있어요.`); return; }
       const p = allPlayers.find(x => x.id === el.dataset.id);
       selected.set(p.id, { name: p.name, chips: p.chips, result: null, stake: null, multiplier: currentBooth ? currentBooth.baseMultiplier : 2 });
