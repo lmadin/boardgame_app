@@ -206,6 +206,9 @@ app.post('/api/booth/:id/bet', boothAuth, (req, res) => {
   if (mode === '1v1' && entries.length !== 1) {
     return res.status(400).json({ error: '1:1 모드는 참가자 1명만 선택해주세요.' });
   }
+  if (mode === '1v2' && (entries.length < 1 || entries.length > 2)) {
+    return res.status(400).json({ error: '1:2 모드는 참가자 최대 2명까지 선택해주세요.' });
+  }
   if (mode === '1v3' && (entries.length < 1 || entries.length > 3)) {
     return res.status(400).json({ error: '1:3 모드는 참가자 최대 3명까지 선택해주세요.' });
   }
